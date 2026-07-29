@@ -306,210 +306,307 @@ html, body {
 }
 .btn-amber:hover { background: rgba(255,193,7,0.08); }
 
-/* ============================================================
+/* ==========================================================
    SCREEN 2 — MISSION BRIEFING
-   ============================================================ */
-#screen-mission {
-  background:
-    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(0,229,255,0.04), transparent),
-    var(--bg);
-  justify-content: flex-start;
+========================================================== */
+
+#screen-mission{
+    display:none;
+    justify-content:flex-start;
+    align-items:center;
+
+    min-height:100vh;
+
+    padding:50px 20px 80px;
+
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
-.mission-wrap {
-  width: 100%;
-  max-width: 700px;
-  padding: 40px 24px 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
+#screen-mission.active{
+    display:flex;
 }
 
-/* Hero */
-.mission-hero { text-align: center; }
+.mission-wrap{
 
-.mission-tag {
-  font-family: var(--font-hud);
-  font-size: 9px;
-  letter-spacing: 4px;
-  color: var(--cyan-mid);
-  margin-bottom: 12px;
-  opacity: 0.8;
-}
+    width:100%;
+    max-width:900px;
 
-.mission-title {
-  font-family: var(--font-hud);
-  font-size: clamp(26px, 5vw, 44px);
-  font-weight: 900;
-  color: var(--green);
-  text-shadow: var(--glow-g);
-  letter-spacing: 3px;
-  line-height: 1.1;
-  margin-bottom: 16px;
+    margin:0 auto;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:32px;
 }
 
-.mission-divider {
-  width: 80px; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--green), transparent);
-  margin: 0 auto 16px;
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.mission-header{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    text-align:center;
 }
 
-.team-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0,255,157,0.07);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 6px 16px;
-  font-family: var(--font-hud);
-  font-size: 12px;
-  color: var(--green);
-  letter-spacing: 3px;
-}
-.pill-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 6px var(--green);
-  animation: pulsedot 1.5s ease infinite;
+.mission-chip{
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:8px 22px;
+
+    border:1px solid rgba(0,255,136,.35);
+
+    border-radius:999px;
+
+    background:rgba(0,255,136,.05);
+
+    color:#7df9d4;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+
+    margin-bottom:20px;
 }
 
-/* Mission sections */
-.mission-section { display: flex; flex-direction: column; gap: 12px; }
+.mission-title{
 
-.section-label {
-  font-family: var(--font-hud);
-  font-size: 9px;
-  letter-spacing: 4px;
-  color: var(--text-mid);
-  text-transform: uppercase;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-dim);
-}
+    margin:0;
 
-.mission-story {
-  background: var(--bg-card);
-  border: 1px solid var(--border-dim);
-  border-radius: var(--radius);
-  padding: 24px;
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: #b8e8c8;
-  line-height: 1.85;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.mission-story strong { color: var(--green); }
-.mission-story em { color: var(--cyan); font-style: normal; }
+    font-size:clamp(42px,6vw,64px);
 
-/* Rules grid */
-.rules-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+    font-weight:900;
+
+    letter-spacing:3px;
+
+    line-height:1;
+
+    color:#ecfff7;
+
+    text-transform:uppercase;
+
+    text-shadow:
+        0 0 10px rgba(0,255,136,.30),
+        0 0 24px rgba(0,255,136,.18);
 }
 
-.rule-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-dim);
-  border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition: border-color var(--t);
-}
-.rule-card:hover { border-color: var(--border); }
+.mission-subtitle{
 
-.rule-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
+    margin-top:14px;
 
-.rule-text {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: #a0c8b0;
-  line-height: 1.4;
-}
-.rule-text strong { color: var(--green); }
+    color:#00d9ff;
 
-/* Launch button */
-.btn-launch {
-  padding: 18px 40px;
-  font-size: 14px;
-  letter-spacing: 4px;
-  align-self: center;
-  min-width: 260px;
+    font-size:14px;
+
+    font-weight:600;
+
+    letter-spacing:6px;
+
+    text-transform:uppercase;
+
+    opacity:.9;
 }
 
-/* Intel card — classified hints */
-.intel-card {
-  background: rgba(255, 59, 59, 0.03);
-  border: 1px solid rgba(255, 59, 59, 0.22);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  position: relative;
-  overflow: hidden;
-}
-.intel-card::before {
-  content: 'CLASSIFIED';
-  position: absolute;
-  top: 10px; right: 14px;
-  font-family: var(--font-hud);
-  font-size: 8px;
-  letter-spacing: 3px;
-  color: rgba(255,59,59,0.25);
-  pointer-events: none;
+
+/* ==========================================================
+   STORY INTRO
+========================================================== */
+
+.mission-intro{
+
+    width:100%;
+
+    background:#141414;
+
+    border:1px solid rgba(0,255,136,.20);
+
+    border-left:4px solid #00ff88;
+
+    border-radius:18px;
+
+    padding:24px 30px;
+
+    box-sizing:border-box;
+
+    color:#dddddd;
+
+    font-size:17px;
+
+    line-height:1.8;
+
+    box-shadow:0 0 15px rgba(0,255,136,.08);
 }
 
-.intel-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: #b8c8be;
-  line-height: 1.6;
-}
-.intel-item em { color: var(--green); font-style: normal; font-weight: 500; }
-.intel-item strong { color: var(--green); }
-.intel-item code {
-  font-family: var(--font-mono);
-  background: rgba(0,255,157,0.08);
-  border: 1px solid var(--border-dim);
-  border-radius: 3px;
-  padding: 1px 6px;
-  font-size: 13px;
-  color: var(--cyan);
+.mission-intro p{
+
+    margin:0 0 16px;
 }
 
-.intel-bullet {
-  color: var(--red);
-  font-size: 12px;
-  margin-top: 3px;
-  flex-shrink: 0;
-}
-.intel-format .intel-bullet { color: var(--amber); }
+.mission-intro p:last-child{
 
-.intel-divider {
-  height: 1px;
-  background: rgba(255,59,59,0.15);
-  margin: 2px 0;
+    margin-bottom:0;
 }
 
-.intel-format {
-  background: rgba(255,193,7,0.04);
-  border: 1px dashed rgba(255,193,7,0.2);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  margin: 2px -6px 0;
+.mission-intro strong{
+
+    color:#8efed8;
 }
+
+
+/* ==========================================================
+   PROTOCOL CARD
+========================================================== */
+
+.protocol-card{
+
+    width:100%;
+
+    background:#141414;
+
+    border:2px solid #00ff88;
+
+    border-radius:20px;
+
+    padding:34px;
+
+    box-sizing:border-box;
+
+    box-shadow:0 0 20px rgba(0,255,136,.08);
+}
+
+.protocol-row{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:22px;
+
+    padding:18px 0;
+}
+
+.protocol-divider{
+
+    height:1px;
+
+    background:rgba(255,255,255,.08);
+}
+
+.protocol-icon{
+
+    width:48px;
+
+    text-align:center;
+
+    font-size:30px;
+
+    flex-shrink:0;
+}
+
+.protocol-content{
+
+    flex:1;
+}
+
+.protocol-title{
+
+    color:#00ff88;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    margin-bottom:6px;
+}
+
+.protocol-desc{
+
+    color:#dddddd;
+
+    font-size:17px;
+
+    line-height:1.7;
+}
+
+
+/* ==========================================================
+   BUTTON
+========================================================== */
+
+.mission-footer{
+
+    display:flex;
+    justify-content:center;
+
+    margin-top:10px;
+}
+
+#btn-start-mission{
+
+    min-width:320px;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:768px){
+
+    #screen-mission{
+
+        padding:30px 16px 60px;
+    }
+
+    .mission-wrap{
+
+        gap:24px;
+    }
+
+    .protocol-card{
+
+        padding:24px;
+    }
+
+    .protocol-row{
+
+        gap:16px;
+    }
+
+    .protocol-title{
+
+        font-size:18px;
+    }
+
+    .protocol-desc{
+
+        font-size:15px;
+    }
+
+    #btn-start-mission{
+
+        width:100%;
+        min-width:0;
+    }
+}
+
+
+
+
+
+
 
 /* ============================================================
    SCREEN 3 — CHAT / GAME
