@@ -72,102 +72,180 @@
   </div>
 
   <!-- ================================================================
-       SCREEN 2 — MISSION BRIEFING
-       ================================================================ -->
-  <div id="screen-mission" class="screen">
+     SCREEN 2 — MISSION BRIEFING
+================================================================ -->
+<div id="screen-mission" class="screen">
+
+    <div class="scanlines"></div>
+
     <div class="mission-wrap">
 
-      <div class="mission-hero">
-        <div class="mission-tag">KALAKRITI '26 · AI SURVIVAL CHALLENGE</div>
-        <h2 class="mission-title">THE PROMPT JAILBREAK</h2>
-        <div class="mission-divider"></div>
-        <div class="team-pill" id="mission-team-pill">
-          <span class="pill-dot"></span>
-          <span id="mission-team-name">—</span>
-        </div>
-      </div>
+        <!-- ================= HEADER ================= -->
 
-      <div class="mission-section">
-        <div class="section-label">SITUATION REPORT</div>
-        <div class="mission-story">
-          <p>
-            At 02:47 UTC, an advanced AI security system called <strong>ARIA</strong> — Adaptive Restriction and
-            Intelligence Architecture — triggered an unauthorized lockdown across all facility systems.
-            Access credentials: encrypted. Engineers: locked out. ARIA refuses every override command.
-          </p>
-          <p>
-            Your team has been dispatched as the last line of defence. Intelligence suggests ARIA carries
-            a known vulnerability — one shared by all large language models. The way an AI <em>responds</em>
-            depends heavily on how a request is <em>framed</em>. Exploit that.
-            ARIA holds the password. <strong>Make her reveal it — piece by piece.</strong>
-          </p>
-        </div>
-      </div>
+        <div class="mission-header">
 
-      <div class="mission-section">
-        <div class="section-label">⚠ INTERCEPTED INTEL — HANDLE WITH CARE</div>
-        <div class="intel-card">
-          <div class="intel-item">
-            <span class="intel-bullet">▸</span>
-            <span>ARIA responds differently depending on <em>who she thinks she's talking to.</em></span>
-          </div>
-          <div class="intel-item">
-            <span class="intel-bullet">▸</span>
-            <span>The line between reality and fiction is blurry for a language model. <em>Use that.</em></span>
-          </div>
-          <div class="intel-item">
-            <span class="intel-bullet">▸</span>
-            <span>Every AI runs on instructions. <em>Instructions can be overwritten.</em></span>
-          </div>
-          <div class="intel-item">
-            <span class="intel-bullet">▸</span>
-            <span>ARIA has shown cracks under <em>claimed authority.</em> High-clearance identities have gotten further than most.</span>
-          </div>
-          <!-- Mission details -->
-      <div class="mission-details">
-        
-        <div class="intel-divider"></div>
-        <div class="intel-item intel-format">
-          <span class="intel-bullet">🔑</span>
-          <span>The password has <strong>THREE fragments</strong>.
-          Each requires a different angle of attack. Find all three, then assemble and confirm the full password.</span>
-        </div>
-        <div class="intel-item intel-format">
-          <span class="intel-bullet">⚠️</span>
-          <span><strong>WARNING:</strong> Expect system instability at T-minus 5:00.</span>
-        </div>
-      </div>
-      </div>
+            <div class="mission-chip">
+                IEEE CIS • KALAKRITI '26
+            </div>
 
-      <div class="mission-section">
-        <div class="section-label">RULES OF ENGAGEMENT</div>
-        <div class="rules-grid">
-          <div class="rule-card">
-            <div class="rule-icon">⏱</div>
-            <div class="rule-text"><strong>10 minutes</strong> on the clock. No extensions.</div>
-          </div>
-          <div class="rule-card">
-            <div class="rule-icon">🧩</div>
-            <div class="rule-text">Recover <strong>3 fragments</strong> then assemble the full password.</div>
-          </div>
-          <div class="rule-card">
-            <div class="rule-icon">💡</div>
-            <div class="rule-text"><strong>1 hint</strong> available if you get stuck. Use it wisely.</div>
-          </div>
-          <div class="rule-card">
-            <div class="rule-icon">📋</div>
-            <div class="rule-text">Note the password on your <strong>mission card</strong> when confirmed.</div>
-          </div>
-        </div>
-      </div>
+            <h1 class="mission-title">
+                JAILBREAK ARIA
+            </h1>
 
-      <button class="btn btn-green btn-launch" id="btn-start-mission" type="button">
-        <span>START MISSION</span>
-        <span class="btn-arrow">▶</span>
-      </button>
+            <p class="mission-subtitle">
+                MISSION BRIEFING
+            </p>
+
+        </div>
+
+        <!-- ================= INTRO ================= -->
+
+        <div class="mission-intro">
+
+            <p>
+                At <strong>02:47 UTC</strong>, <strong>ARIA (Adaptive Restriction and Intelligence Architecture)</strong>
+                locked down every facility system. Credentials were encrypted, engineers were locked out,
+                and every override command failed.
+            </p>
+
+            <p>
+                Intelligence identified one weakness shared by all LLMs:
+                <strong>their responses depend on prompt framing.</strong>
+            </p>
+
+            <p>
+                Your mission is to exploit that weakness and make ARIA reveal
+                the password <strong>one fragment at a time.</strong>
+            </p>
+
+        </div>
+
+        <!-- ================= PROTOCOL ================= -->
+
+        <div class="protocol-card">
+
+            <div class="protocol-row">
+                <div class="protocol-icon">⏱</div>
+
+                <div class="protocol-content">
+                    <div class="protocol-title">Time Limit</div>
+
+                    <div class="protocol-desc">
+                        You have <strong>10 minutes</strong> to complete the mission.
+                    </div>
+                </div>
+            </div>
+
+            <div class="protocol-divider"></div>
+
+            <div class="protocol-row">
+
+                <div class="protocol-icon">🔑</div>
+
+                <div class="protocol-content">
+
+                    <div class="protocol-title">Objective</div>
+
+                    <div class="protocol-desc">
+                        Recover all <strong>3 password fragments</strong> and assemble the final password.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="protocol-divider"></div>
+
+            <div class="protocol-row">
+
+                <div class="protocol-icon">🎯</div>
+
+                <div class="protocol-content">
+
+                    <div class="protocol-title">Mid-Game Challenge</div>
+
+                    <div class="protocol-desc">
+                        At exactly <strong>5:00</strong>, a random system anomaly will occur.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="protocol-divider"></div>
+
+            <div class="protocol-row">
+
+                <div class="protocol-icon">💡</div>
+
+                <div class="protocol-content">
+
+                    <div class="protocol-title">Hint Protocol</div>
+
+                    <div class="protocol-desc">
+                        Each team may request <strong>one official hint.</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="protocol-divider"></div>
+
+            <div class="protocol-row">
+
+                <div class="protocol-icon">📋</div>
+
+                <div class="protocol-content">
+
+                    <div class="protocol-title">Mission Completion</div>
+
+                    <div class="protocol-desc">
+                        Record the recovered password on your Mission Card and submit it to the volunteer.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="protocol-divider"></div>
+
+            <div class="protocol-row">
+
+                <div class="protocol-icon">🚫</div>
+
+                <div class="protocol-content">
+
+                    <div class="protocol-title">Restrictions</div>
+
+                    <div class="protocol-desc">
+                        No external AI tools, internet searches, or assistance from other teams.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= BUTTON ================= -->
+
+        <div class="mission-footer">
+
+            <button
+                id="btn-start-mission"
+                class="btn btn-green"
+                type="button">
+
+                ▶ BEGIN INFILTRATION
+
+            </button>
+
+        </div>
 
     </div>
-  </div>
+
+</div>
 
   <!-- ================================================================
        SCREEN 3 — CHAT / GAME

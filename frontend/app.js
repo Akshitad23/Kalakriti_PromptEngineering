@@ -117,7 +117,7 @@ async function startSession() {
       console.warn("Fullscreen request failed:", e);
     }
 
-    $('mission-team-name').textContent = teamId;
+   
     showScreen('mission');
 
   } catch (err) {
