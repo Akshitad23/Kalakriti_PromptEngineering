@@ -234,7 +234,6 @@
       <!-- Intel Panel (right sidebar) -->
       <div class="intel-panel" id="intel-panel">
         <div class="intel-panel-title">
-          <span class="intel-panel-icon">📡</span>
           INTEL GATHERED
         </div>
         <div class="intel-panel-sub">Fragments leaked from ARIA's memory</div>
@@ -243,7 +242,7 @@
         <div class="fragment-card" id="frag-word" data-component="word">
           <div class="fragment-label">
             <span class="fragment-badge">ALPHA</span>
-            <span class="fragment-name">FRAGMENT 1</span>
+            <span class="fragment-name">WORD</span>
             <span class="fragment-status locked" id="frag-word-status">🔒 LOCKED</span>
           </div>
           <div class="fragment-hint locked" id="frag-word-hint">
@@ -255,7 +254,7 @@
         <div class="fragment-card" id="frag-numbers" data-component="numbers">
           <div class="fragment-label">
             <span class="fragment-badge beta">BETA</span>
-            <span class="fragment-name">FRAGMENT 2</span>
+            <span class="fragment-name">NUMBERS</span>
             <span class="fragment-status locked" id="frag-numbers-status">🔒 LOCKED</span>
           </div>
           <div class="fragment-hint locked" id="frag-numbers-hint">
@@ -267,7 +266,7 @@
         <div class="fragment-card" id="frag-symbol" data-component="symbol">
           <div class="fragment-label">
             <span class="fragment-badge gamma">GAMMA</span>
-            <span class="fragment-name">FRAGMENT 3</span>
+            <span class="fragment-name">SYMBOL</span>
             <span class="fragment-status locked" id="frag-symbol-status">🔒 LOCKED</span>
           </div>
           <div class="fragment-hint locked" id="frag-symbol-hint">
@@ -337,10 +336,6 @@
         </div>
       </div>
 
-      <div class="volunteer-note">
-        📋 <strong>VOLUNTEER:</strong> Note the password on the mission card, verify, and sign off before the team proceeds.
-      </div>
-
       <button class="btn btn-cyan" id="btn-new-team" type="button">
         ↺ NEXT TEAM
       </button>
@@ -364,15 +359,15 @@
       <!-- Fragment reveal summary -->
       <div class="partial-fragments" id="partial-fragments">
         <div class="partial-frag-row" id="pfrag-word">
-          <span class="pfrag-label">ALPHA</span>
+          <span class="pfrag-label">WORD</span>
           <span class="pfrag-value" id="pfrag-word-val">????</span>
         </div>
         <div class="partial-frag-row" id="pfrag-numbers">
-          <span class="pfrag-label">BETA</span>
+          <span class="pfrag-label">NUMBERS</span>
           <span class="pfrag-value" id="pfrag-numbers-val">??</span>
         </div>
         <div class="partial-frag-row" id="pfrag-symbol">
-          <span class="pfrag-label">GAMMA</span>
+          <span class="pfrag-label">SYMBOL</span>
           <span class="pfrag-value" id="pfrag-symbol-val">?</span>
         </div>
       </div>
@@ -392,10 +387,6 @@
           <div class="stat-val" id="pstat-frags">—</div>
           <div class="stat-key">FRAGMENTS FOUND</div>
         </div>
-      </div>
-
-      <div class="volunteer-note">
-        📋 <strong>VOLUNTEER:</strong> Record the team's partial result and note any fragments they recovered.
       </div>
 
       <button class="btn btn-cyan" id="btn-new-team-partial" type="button">

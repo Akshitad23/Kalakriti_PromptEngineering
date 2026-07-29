@@ -35,7 +35,7 @@ CORS(app)
 from logger_db import (
     init_db, log_session_start, log_session_end,
     log_attempt, log_hint_used, get_all_sessions_summary,
-    get_session_messages
+    get_session_messages, team_exists
 )
 from session_manager import session_manager
 from ai_client import init_client, get_aria_response, _is_client_ready
@@ -83,6 +83,9 @@ def start_session():
     team_id = str(data.get("team_id", "")).strip().upper()
     if not team_id:
         return jsonify({"error": "team_id is required"}), 400
+
+    if team_exists(team_id):
+        return jsonify({"error": "Team name already taken. Please use a unique team name."}), 400
 
     session = session_manager.start_session(team_id)
     log_session_start(session.team_id, session.session_id, session.password)
@@ -216,7 +219,7 @@ def confirm_password():
     if session.confirm_attempts >= MAX_CONFIRM_ATTEMPTS:
         # Reveal anyway -- they had all the pieces but ran out of tries
         session.mark_success(win_type="partial")
-        elapsed = session.elapsed_seconds
+        elapsed = min(session.elapsed_seconds, 600.0)
         log_session_end(
             session_id          = session.session_id,
             success             = False,
@@ -240,7 +243,7 @@ def confirm_password():
 
     if correct:
         session.mark_success(win_type="full")
-        elapsed     = session.elapsed_seconds
+        elapsed     = min(session.elapsed_seconds, 600.0)
         defeat_line = random.choice(DEFEATED_LINES).format(password=session.password)
         log_session_end(
             session_id          = session.session_id,
@@ -306,7 +309,7 @@ def session_timeout():
     session.mark_timeout()
     count         = len(session.components_revealed)
     partial_info  = session.get_partial_reveal()
-    elapsed       = session.elapsed_seconds
+    elapsed       = min(session.elapsed_seconds, 600.0)
 
     if count == 0:
         message = "MISSION FAILED. ARIA's defenses held completely. No fragments recovered."

@@ -220,7 +220,7 @@ function revealFragment(component, hintText) {
   state.components[component] = true;
 
   // System message to draw attention
-  const compNames = { word: 'ALPHA FRAGMENT', numbers: 'BETA FRAGMENT', symbol: 'GAMMA FRAGMENT' };
+  const compNames = { word: 'WORD', numbers: 'NUMBERS', symbol: 'SYMBOL' };
   addMessage('system', `📡 ${compNames[component] || component.toUpperCase()} EXTRACTED — Check Intel Panel →`);
 }
 

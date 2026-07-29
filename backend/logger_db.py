@@ -137,6 +137,12 @@ def log_hint_used(session_id: str):
         """, (session_id,))
 
 
+def team_exists(team_id: str) -> bool:
+    with _get_conn() as conn:
+        row = conn.execute("SELECT 1 FROM sessions WHERE team_id = ?", (team_id,)).fetchone()
+        return row is not None
+
+
 def get_all_sessions_summary():
     """Returns all sessions as list of dicts for CSV export."""
     with _get_conn() as conn:
