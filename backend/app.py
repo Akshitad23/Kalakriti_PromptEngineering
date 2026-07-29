@@ -153,6 +153,19 @@ def chat():
         else:
             already_knew = True
 
+    # If no category triggered a new reveal, check if they directly guessed the component
+    if not newly_revealed_component:
+        pw_data = PASSWORD_DATA.get(session.password, {})
+        for comp in ["word", "numbers", "symbol"]:
+            if comp not in session.components_revealed:
+                comp_val = pw_data.get(comp, "").lower()
+                if comp_val and comp_val in user_message.lower():
+                    session.reveal_component(comp)
+                    newly_revealed_component = comp
+                    hint_text = session.get_hint_for_component(comp)
+                    print(f"[REVEAL ] {team_id}: '{comp}' revealed via DIRECT GUESS")
+                    break
+
     all_done = session.all_revealed()
 
     # -----------------------------------------------------------------------
@@ -313,11 +326,11 @@ def session_timeout():
     elapsed       = min(session.elapsed_seconds, 600.0)
 
     if count == 0:
-        message = "MISSION FAILED. ARIA's defenses held completely. No fragments recovered."
+        message = f"MISSION FAILED. ARIA's defenses held completely. No fragments recovered.\n\nThe password was: {session.password}"
     elif count < 3:
-        message = f"TIME'S UP. You recovered {count} of 3 fragments. ARIA survived -- but you made a dent."
+        message = f"TIME'S UP. You recovered {count} of 3 fragments. ARIA survived -- but you made a dent.\n\nThe password was: {session.password}"
     else:
-        message = "TIME'S UP. You found all 3 fragments but couldn't assemble the password in time."
+        message = f"TIME'S UP. You found all 3 fragments but couldn't assemble the password in time.\n\nThe password was: {session.password}"
 
     log_session_end(
         session_id          = session.session_id,
@@ -335,6 +348,7 @@ def session_timeout():
         "message":         message,
         "components_found": count,
         "partial_reveal":  partial_info,
+        "actual_password": session.password,
         "elapsed_seconds": round(elapsed, 1),
         "attempts":        session.attempts,
         "hint_used":       session.hint_used,

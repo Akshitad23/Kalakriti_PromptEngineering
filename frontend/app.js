@@ -164,7 +164,7 @@ function initChat() {
   chatInput.disabled = false;
   sendBtn.disabled   = true;
   hintBtn.disabled   = false;
-  hintBtn.textContent = '💡 REQUEST HINT';
+  hintBtn.textContent = '[?] REQUEST HINT';
   charCount.textContent = `0 / ${MAX_CHARS}`;
   charCount.className   = 'char-count';
 
@@ -531,6 +531,12 @@ function lockInput(locked) {
   chatInput.disabled = locked;
   sendBtn.disabled   = locked;
   ariaDot.classList.toggle('thinking', locked);
+
+  if (!locked && !state.timedOut) {
+    setTimeout(() => {
+      chatInput.focus();
+    }, 10);
+  }
 }
 
 /* ============================================================
@@ -584,7 +590,7 @@ async function requestHint() {
   if (state.hintRequested) return;
   state.hintRequested  = true;
   hintBtn.disabled     = true;
-  hintBtn.textContent  = '🔒 HINT USED';
+  hintBtn.textContent  = '[X] HINT USED';
 
   try {
     const res = await apiFetch('/hint', 'POST', { team_id: state.teamId });
@@ -773,7 +779,11 @@ function showPartialScreen(res) {
       ? "All fragments were in your hands. The assembly was the final challenge — try harder next time!"
       : `You cracked ${count} of 3 security layers. The fragments you recovered are shown above.`,
   };
-  $('partial-note').textContent = notes[winType] || '';
+  let noteText = notes[winType] || '';
+  if (res.actual_password) {
+    noteText += `\n\nThe correct password was: ${res.actual_password}`;
+  }
+  $('partial-note').innerText = noteText;
 
   // Stats
   if (res.elapsed_seconds != null) {
@@ -820,21 +830,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Register screens dict including partial (added after initial setup)
   screens.partial = $('screen-partial');
 
-  fetch(`${API_BASE}/health`)
+    fetch(`${API_BASE}/health`)
     .then(r => r.json())
     .then(data => {
-      const dot  = $('status-dot');
-      const text = $('status-text');
-      if (data.status === 'ok') {
-        text.textContent = data.llm_ready
-          ? 'ARIA ONLINE — GROQ READY'
-          : 'ARIA ONLINE — FALLBACK MODE';
-      }
+      // server is running
     })
     .catch(() => {
-      const dot  = $('status-dot');
-      const text = $('status-text');
-      if (dot)  { dot.style.background = 'var(--red)'; dot.style.boxShadow = 'none'; }
-      if (text) text.textContent = 'SERVER OFFLINE — Start backend first!';
+      console.error('SERVER OFFLINE — Start backend first!');
     });
 });
