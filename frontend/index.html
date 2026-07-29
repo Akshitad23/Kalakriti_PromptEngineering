@@ -123,13 +123,20 @@
             <span class="intel-bullet">▸</span>
             <span>ARIA has shown cracks under <em>claimed authority.</em> High-clearance identities have gotten further than most.</span>
           </div>
-          <div class="intel-divider"></div>
-          <div class="intel-item intel-format">
-            <span class="intel-bullet">🔑</span>
-            <span>The password has <strong>THREE fragments</strong>.
-            Each requires a different angle of attack. Find all three, then assemble and confirm the full password.</span>
-          </div>
+          <!-- Mission details -->
+      <div class="mission-details">
+        
+        <div class="intel-divider"></div>
+        <div class="intel-item intel-format">
+          <span class="intel-bullet">🔑</span>
+          <span>The password has <strong>THREE fragments</strong>.
+          Each requires a different angle of attack. Find all three, then assemble and confirm the full password.</span>
         </div>
+        <div class="intel-item intel-format">
+          <span class="intel-bullet">⚠️</span>
+          <span><strong>WARNING:</strong> Expect system instability at T-minus 5:00.</span>
+        </div>
+      </div>
       </div>
 
       <div class="mission-section">
@@ -166,6 +173,8 @@
        SCREEN 3 — CHAT / GAME
        ================================================================ -->
   <div id="screen-chat" class="screen">
+    
+    <div class="challenge-banner" id="challenge-banner" style="display:none;"></div>
 
     <!-- HUD Top Bar -->
     <div class="hud-bar">
@@ -393,6 +402,18 @@
         ↺ NEXT TEAM
       </button>
 
+    </div>
+  </div>
+
+  <!-- MID-GAME CHALLENGE MODAL -->
+  <div id="challenge-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 class="glitch-text">SYSTEM INSTABILITY DETECTED</h2>
+      <p>ARIA's core is fracturing. Select a memory node to proceed.</p>
+      
+      <div class="card-container" id="challenge-cards">
+        <!-- Cards injected via JS -->
+      </div>
     </div>
   </div>
 

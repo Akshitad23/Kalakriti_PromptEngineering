@@ -41,7 +41,8 @@ from session_manager import session_manager
 from ai_client import init_client, get_aria_response, _is_client_ready
 from config import (
     CATEGORIES, DEFEATED_LINES, ALL_REVEALED_LINES,
-    ARIA_INTRO, MAX_HISTORY_TURNS, MAX_CONFIRM_ATTEMPTS
+    ARIA_INTRO, MAX_HISTORY_TURNS, MAX_CONFIRM_ATTEMPTS,
+    PASSWORD_DATA
 )
 
 init_db()
@@ -82,7 +83,7 @@ def start_session():
     data    = request.get_json(silent=True) or {}
     team_id = str(data.get("team_id", "")).strip().upper()
     if not team_id:
-        return jsonify({"error": "team_id is required"}), 400
+        return jsonify({"error": "Admin password required"}), 401
 
     if team_exists(team_id):
         return jsonify({"error": "Team name already taken. Please use a unique team name."}), 400

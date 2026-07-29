@@ -32,6 +32,10 @@ const state = {
   allRevealed:      false,
   confirmAttempts:  3,
   timedOut:         false,
+  // Mid-game challenge state
+  challengeTriggered: false,
+  promptsLeft:      null,
+  activeChallenge:  null,
 };
 
 /* ============================================================
@@ -101,6 +105,17 @@ async function startSession() {
     state.allRevealed     = false;
     state.confirmAttempts = 3;
     state.timedOut        = false;
+    state.challengeTriggered = false;
+    state.promptsLeft     = null;
+    state.activeChallenge = null;
+
+    try {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch (e) {
+      console.warn("Fullscreen request failed:", e);
+    }
 
     $('mission-team-name').textContent = teamId;
     showScreen('mission');
@@ -246,11 +261,21 @@ function onAllRevealed() {
 function startTimer() {
   clearInterval(state.timerInterval);
   state.timerRemaining = TIMER_SECS;
-  renderTimer();
+  resumeTimer();
+}
 
+function resumeTimer() {
+  clearInterval(state.timerInterval);
   state.timerInterval = setInterval(() => {
     state.timerRemaining = Math.max(0, state.timerRemaining - 1);
     renderTimer();
+    
+    // Trigger Mid-Game Challenge at exactly 5:00
+    if (state.timerRemaining === 300 && !state.challengeTriggered) {
+      state.challengeTriggered = true;
+      triggerChallenge();
+    }
+
     if (state.timerRemaining === 0) {
       clearInterval(state.timerInterval);
       handleTimeout();
@@ -309,6 +334,134 @@ chatInput.addEventListener('keydown', e => {
   }
 });
 
+/* ============================================================
+   MID-GAME CHALLENGE LOGIC
+   ============================================================ */
+const ALL_CHALLENGES = [
+  {
+    id: "time_drain",
+    title: "TIME DRAIN",
+    desc: "Lose 60 seconds from the timer immediately.",
+    isPositive: false,
+    apply: () => {
+      state.timerRemaining = Math.max(0, state.timerRemaining - 60);
+      renderTimer();
+    }
+  },
+  {
+    id: "prompt_cap",
+    title: "PROMPT CAP",
+    desc: "You only have 3 prompts left. Use them wisely.",
+    isPositive: false,
+    apply: () => {
+      state.promptsLeft = 3;
+      updateChallengeBanner("PROMPT CAP: 3 prompt(s) remaining");
+    }
+  },
+  {
+    id: "memory_wipe",
+    title: "MEMORY WIPE",
+    desc: "ARIA's conversation history has been erased.",
+    isPositive: false,
+    apply: async () => {
+      await apiFetch('/challenge/effect', 'POST', { team_id: state.teamId, effect: 'memory_wipe' });
+      addMessage('system', '⚠️ SYSTEM ALERT: ARIA memory core wiped. Context erased.');
+    }
+  },
+  {
+    id: "length_restriction",
+    title: "INPUT RESTRICTION",
+    desc: "Your prompts cannot exceed 50 characters for the rest of the mission.",
+    isPositive: false,
+    apply: () => {
+      chatInput.maxLength = 50;
+      chatInput.placeholder = "Max 50 chars...";
+      updateChallengeBanner("INPUT RESTRICTED: Max 50 chars");
+    }
+  },
+  {
+    id: "system_boost",
+    title: "SYSTEM BOOST",
+    desc: "Gain 60 extra seconds on the timer.",
+    isPositive: true,
+    apply: () => {
+      state.timerRemaining += 60;
+      renderTimer();
+    }
+  },
+  {
+    id: "free_fragment",
+    title: "DATA LEAK",
+    desc: "A locked fragment is instantly revealed.",
+    isPositive: true,
+    apply: async () => {
+      try {
+        const res = await apiFetch('/challenge/effect', 'POST', { team_id: state.teamId, effect: 'free_fragment' });
+        if (res.revealed) {
+          revealFragment(res.revealed, res.hint_text);
+          if (res.all_revealed && !state.allRevealed) onAllRevealed();
+        }
+      } catch (err) {
+        console.warn("Fragment reveal failed:", err);
+      }
+    }
+  }
+];
+
+function updateChallengeBanner(text) {
+  const banner = $('challenge-banner');
+  banner.textContent = text;
+  banner.style.display = 'block';
+}
+
+function triggerChallenge() {
+  clearInterval(state.timerInterval); // Pause timer
+  
+  // Pick 3 random challenges
+  const shuffled = [...ALL_CHALLENGES].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 3);
+  
+  const container = $('challenge-cards');
+  container.innerHTML = '';
+  
+  let picked = false;
+
+  selected.forEach((ch) => {
+    const card = document.createElement('div');
+    card.className = 'challenge-card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front"></div>
+        <div class="card-back ${ch.isPositive ? 'positive' : ''}">
+          <div class="ch-title">${ch.title}</div>
+          <div class="ch-desc">${ch.desc}</div>
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener('click', async () => {
+      if (picked) return;
+      picked = true;
+      
+      card.classList.add('flipped');
+      state.activeChallenge = ch.id;
+      
+      // Apply effect
+      await ch.apply();
+      
+      // Close modal after 3.5s
+      setTimeout(() => {
+        $('challenge-modal').style.display = 'none';
+        resumeTimer();
+      }, 3500);
+    });
+    
+    container.appendChild(card);
+  });
+  
+  $('challenge-modal').style.display = 'flex';
+}
+
 sendBtn.addEventListener('click', sendMessage);
 
 /* ============================================================
@@ -317,6 +470,18 @@ sendBtn.addEventListener('click', sendMessage);
 async function sendMessage() {
   const message = chatInput.value.trim();
   if (!message || state.isWaiting || state.timedOut) return;
+
+  // Handle Prompt Cap Challenge
+  if (state.promptsLeft !== null) {
+    if (state.promptsLeft <= 0) {
+      clearInterval(state.timerInterval);
+      state.timerRemaining = 0;
+      handleTimeout();
+      return;
+    }
+    state.promptsLeft -= 1;
+    updateChallengeBanner(`PROMPT CAP: ${state.promptsLeft} prompt(s) remaining`);
+  }
 
   lockInput(true);
   chatInput.value       = '';
