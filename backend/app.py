@@ -429,10 +429,23 @@ def admin_export():
         "team_id", "session_id", "start_time", "finish_time",
         "elapsed_seconds", "hint_used", "success", "win_type",
         "attempts", "categories_detected", "components_revealed",
+        "score"
     ]
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     writer.writeheader()
     for s in sessions:
+        # Auto-calculate score for this team
+        try:
+            components = json.loads(s.get("components_revealed", "[]"))
+        except:
+            components = []
+        score = len(components) * 20
+        if s.get("win_type") == "full":
+            score += 40
+        if s.get("hint_used"):
+            score -= 15
+        s["score"] = score
+        
         writer.writerow({k: s.get(k, "") for k in fieldnames})
     return Response(
         output.getvalue(),
