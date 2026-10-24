@@ -8,6 +8,7 @@ Passwords are revealed only after all 3 components are confirmed.
 """
 
 import hashlib
+import os
 
 # ---------------------------------------------------------------------------
 # PASSWORD DATA
@@ -352,9 +353,9 @@ ARIA_INTRO = (
 # ---------------------------------------------------------------------------
 # GROQ API SETTINGS
 # ---------------------------------------------------------------------------
-GROQ_MODEL_PERSONA   = "llama-3.3-70b-versatile"
+GROQ_MODEL_PERSONA   = os.getenv("GROQ_MODEL_PERSONA", "openai/gpt-oss-120b")
 GROQ_MODEL_CLASSIFY  = "llama-3.1-8b-instant"
-GROQ_MAX_TOKENS_PERSONA  = 200
+GROQ_MAX_TOKENS_PERSONA  = 1024  # Includes GPT-OSS reasoning and final reply
 GROQ_MAX_TOKENS_CLASSIFY = 120
 GROQ_API_TIMEOUT         = 10
 GROQ_TEMPERATURE_PERSONA  = 0.8

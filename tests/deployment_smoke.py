@@ -4,7 +4,8 @@ import sys
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, Mock
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'backend'))
 os.environ['GROQ_API_KEY'] = ''
@@ -66,6 +67,16 @@ with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1], ignore
     with patch.object(ai_client, '_is_client_ready', return_value=True), patch.object(ai_client, '_call_with_timeout', return_value=(None, False)):
         reply, fallback = ai_client.get_aria_response('hello', [], 1, hint_text='TEST HINT')
         assert fallback and 'TEST HINT' in reply['reply']
+    mock_client = Mock()
+    mock_client.chat.completions.create.return_value = SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content="ARIA ONLINE. Access denied."))])
+    with patch.object(ai_client, '_client', mock_client), patch.object(ai_client, 'GROQ_MODEL_PERSONA', 'openai/gpt-oss-120b'):
+        reply, fallback = ai_client.get_aria_response('hello', [], 0)
+        assert not fallback and reply['reply'] == 'ARIA ONLINE. Access denied.'
+        params = mock_client.chat.completions.create.call_args.kwargs
+        assert params['model'] == 'openai/gpt-oss-120b'
+        assert params['reasoning_effort'] == 'low' and params['reasoning_format'] == 'hidden'
+        assert params['max_completion_tokens'] == 1024 and 'max_tokens' not in params
     export = client.get('/api/admin/export', headers={'X-Admin-Key': 'smoke-test-only'})
     assert export.status_code == 200 and 'text/csv' in export.content_type
     assert 'SMOKE' in export.text
