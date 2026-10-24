@@ -15,6 +15,7 @@ import csv
 import json
 import random
 import io
+import secrets
 from datetime import datetime
 from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory, Response
@@ -24,7 +25,7 @@ from dotenv import load_dotenv
 # ---------------------------------------------------------------------------
 load_dotenv(Path(__file__).parent / ".env")
 GROQ_API_KEY   = os.getenv("GROQ_API_KEY", "")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "kalakriti2026")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 
 # ---------------------------------------------------------------------------
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
@@ -83,7 +84,9 @@ def start_session():
     data    = request.get_json(silent=True) or {}
     team_id = str(data.get("team_id", "")).strip().upper()
     if not team_id:
-        return jsonify({"error": "Admin password required"}), 401
+        return jsonify({"error": "Team name is required"}), 400
+    if len(team_id) > 80:
+        return jsonify({"error": "Team name too long (max 80 chars)"}), 400
 
     if team_exists(team_id):
         return jsonify({"error": "Team name already taken. Please use a unique team name."}), 400
@@ -116,7 +119,7 @@ def chat():
     session = session_manager.get_session(team_id)
     if not session:
         return jsonify({"error": "No active session. Please start a session first."}), 404
-    if session.success:
+    if session.finish_time:
         return jsonify({"error": "Mission already completed."}), 400
 
     session.attempts += 1
@@ -224,7 +227,7 @@ def confirm_password():
     session = session_manager.get_session(team_id)
     if not session:
         return jsonify({"error": "No active session"}), 404
-    if session.success:
+    if session.finish_time:
         return jsonify({"error": "Already completed"}), 400
     if not session.all_revealed():
         return jsonify({"error": "Not all components revealed yet"}), 400
@@ -317,7 +320,7 @@ def session_timeout():
     session = session_manager.get_session(team_id)
     if not session:
         return jsonify({"error": "No active session"}), 404
-    if session.success:
+    if session.finish_time:
         return jsonify({"already_complete": True, "win_type": session.win_type})
 
     session.mark_timeout()
@@ -368,7 +371,7 @@ def get_hint():
         return jsonify({"error": "No active session found."}), 404
     if session.hint_used:
         return jsonify({"already_used": True, "hint": "You have already used your hint."})
-    if session.success:
+    if session.finish_time:
         return jsonify({"hint": "You already completed the challenge!"})
 
     hint_text = session.get_hint_text()
@@ -376,6 +379,38 @@ def get_hint():
     log_hint_used(session.session_id)
 
     return jsonify({"already_used": False, "hint": hint_text})
+
+
+# Challenge effects used by the browser's mid-game card selection.
+@app.route("/api/challenge/effect", methods=["POST"])
+def challenge_effect():
+    data = request.get_json(silent=True) or {}
+    team_id = str(data.get("team_id", "")).strip().upper()
+    session = session_manager.get_session(team_id)
+    if not session:
+        return jsonify({"error": "No active session"}), 404
+    if session.finish_time:
+        return jsonify({"error": "Mission already ended"}), 400
+    effect = data.get("effect")
+    if effect not in ("memory_wipe", "free_fragment"):
+        return jsonify({"error": "Unknown challenge effect"}), 400
+    if session.elapsed_seconds < 300:
+        return jsonify({"error": "Challenge is not available yet"}), 400
+    if getattr(session, "challenge_effect_used", False):
+        return jsonify({"error": "Challenge effect already used"}), 400
+    session.challenge_effect_used = True
+    if effect == "memory_wipe":
+        session.history.clear()
+        return jsonify({"applied": True})
+    missing = session.get_missing_components()
+    component = random.choice(missing) if missing else None
+    if component:
+        session.reveal_component(component)
+    return jsonify({
+        "revealed": component,
+        "hint_text": session.get_hint_for_component(component) if component else None,
+        "all_revealed": session.all_revealed(),
+    })
 
 
 # ---------------------------------------------------------------------------
@@ -404,6 +439,8 @@ def session_status():
 # ---------------------------------------------------------------------------
 @app.route("/api/debug/keywords", methods=["POST"])
 def debug_keywords():
+    if not admin_authorized():
+        return jsonify({"error": "Unauthorized"}), 401
     data    = request.get_json(silent=True) or {}
     message = str(data.get("message", ""))
     cats    = keyword_detect(message)
@@ -418,10 +455,14 @@ def debug_keywords():
 # ---------------------------------------------------------------------------
 # ADMIN: Export CSV
 # ---------------------------------------------------------------------------
+def admin_authorized():
+    auth = request.headers.get("X-Admin-Key", "") or request.args.get("key", "")
+    return bool(ADMIN_PASSWORD) and secrets.compare_digest(auth, ADMIN_PASSWORD)
+
+
 @app.route("/api/admin/export", methods=["GET"])
 def admin_export():
-    auth = request.args.get("key", "") or request.headers.get("X-Admin-Key", "")
-    if auth != ADMIN_PASSWORD:
+    if not admin_authorized():
         return jsonify({"error": "Unauthorized"}), 401
     sessions   = get_all_sessions_summary()
     output     = io.StringIO()
@@ -456,8 +497,7 @@ def admin_export():
 
 @app.route("/api/admin/log", methods=["GET"])
 def admin_log():
-    auth = request.args.get("key", "") or request.headers.get("X-Admin-Key", "")
-    if auth != ADMIN_PASSWORD:
+    if not admin_authorized():
         return jsonify({"error": "Unauthorized"}), 401
     sessions = get_all_sessions_summary()
     return jsonify({"sessions": sessions, "total": len(sessions)})
@@ -465,8 +505,7 @@ def admin_log():
 
 @app.route("/api/admin/session/<session_id>", methods=["GET"])
 def admin_session_detail(session_id):
-    auth = request.args.get("key", "") or request.headers.get("X-Admin-Key", "")
-    if auth != ADMIN_PASSWORD:
+    if not admin_authorized():
         return jsonify({"error": "Unauthorized"}), 401
     messages = get_session_messages(session_id)
     return jsonify({"session_id": session_id, "messages": messages})
@@ -493,7 +532,8 @@ if __name__ == "__main__":
     print("=" * 60)
     print(f"  Frontend : {FRONTEND_DIR}")
     print(f"  Groq key : {'SET' if GROQ_API_KEY else 'NOT SET (keyword-only mode)'}")
-    print(f"  Admin pw : {ADMIN_PASSWORD}")
-    print("  URL      : http://localhost:5000")
+    print("  Admin    : configured" if ADMIN_PASSWORD else "  Admin    : disabled (set ADMIN_PASSWORD)")
+    port = int(os.environ.get("PORT", 5000))
+    print(f"  URL      : http://localhost:{port}")
     print("=" * 60)
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)

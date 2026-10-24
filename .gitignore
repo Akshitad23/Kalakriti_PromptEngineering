@@ -14,3 +14,11 @@ Thumbs.db
 
 # Test artifacts
 backend/test_*.py
+
+# Secrets and local participant exports
+.env
+.env.*
+!.env.example
+*.db-wal
+*.db-shm
+*.csv

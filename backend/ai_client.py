@@ -27,7 +27,7 @@ _client: Optional[Groq] = None
 
 def init_client(api_key: str):
     global _client
-    _client = Groq(api_key=api_key)
+    _client = Groq(api_key=api_key, timeout=GROQ_API_TIMEOUT, max_retries=0)
     print(f"[Groq] Client initialised -- model: {GROQ_MODEL_PERSONA}")
 
 
@@ -108,6 +108,9 @@ def get_aria_response(
 
     # --- Build conversation messages for Groq ---
     if not _is_client_ready():
+        if hint_text:
+            return {"reply": f"...containment breach... {hint_text}",
+                    "resistance_level": resistance}, True
         return random.choice(STALL_MESSAGES), True
 
     messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]

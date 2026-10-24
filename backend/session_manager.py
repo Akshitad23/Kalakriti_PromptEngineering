@@ -154,7 +154,7 @@ class TeamSession:
     # Success / completion
     # ------------------------------------------------------------------
     def mark_success(self, win_type: str = "full"):
-        self.success    = True
+        self.success    = win_type == "full"
         self.win_type   = win_type
         self.finish_time = datetime.now()
 

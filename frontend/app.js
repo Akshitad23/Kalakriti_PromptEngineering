@@ -10,10 +10,7 @@
  *   partial  → partial win or timeout
  */
 
-/* ============================================================
-   CONFIG
-   ============================================================ */
-const API_BASE   = 'http://localhost:5000/api';
+const API_BASE   = '/api';
 const MAX_CHARS  = 1000;
 const TIMER_SECS = 600; // 10 minutes
 
@@ -447,7 +444,11 @@ function triggerChallenge() {
       state.activeChallenge = ch.id;
       
       // Apply effect
-      await ch.apply();
+      try {
+        await ch.apply();
+      } catch (err) {
+        addMessage('system', `Challenge effect failed: ${err.message}`);
+      }
       
       // Close modal after 3.5s
       setTimeout(() => {
